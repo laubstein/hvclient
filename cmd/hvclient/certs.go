@@ -21,7 +21,7 @@ import (
 	"log"
 	"math/big"
 
-	"github.com/globalsign/hvclient"
+	"github.com/laubstein/hvclient"
 )
 
 // retrieveCert outputs the certificate with the specified serial

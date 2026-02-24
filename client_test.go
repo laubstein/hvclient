@@ -19,8 +19,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/globalsign/hvclient"
-	"github.com/globalsign/hvclient/internal/testhelpers"
+	"github.com/laubstein/hvclient"
+	"github.com/laubstein/hvclient/internal/testhelpers"
 )
 
 func TestNewClientFromFileError(t *testing.T) {
