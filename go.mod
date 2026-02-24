@@ -1,6 +1,6 @@
-module github.com/globalsign/hvclient
+module github.com/laubstein/hvclient
 
-go 1.18
+go 1.26
 
 require (
 	github.com/go-chi/chi v4.1.2+incompatible
