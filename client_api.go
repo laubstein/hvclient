@@ -403,6 +403,35 @@ func (c *Client) ClaimsDomains(
 	return claims, count, nil
 }
 
+// ClaimsDomain returns pending or verified domain claims
+func (c *Client) ClaimsDomain(
+	ctx context.Context,
+	page, perPage int,
+	domain string,
+) ([]Claim, int64, error) {
+	var claims []Claim
+	var r, err = c.makeRequest(
+		ctx,
+		endpointClaimsDomains+
+			paginationString(page, perPage, time.Time{}, time.Time{})+
+			fmt.Sprintf("&domain=%s", domain),
+		http.MethodGet,
+		nil,
+		&claims,
+	)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var count int64
+	count, err = intHeaderFromResponse(r, totalCountHeaderName)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return claims, count, nil
+}
+
 // ClaimSubmit submits a new domain claim and returns the token value that
 // should be used to verify control of that domain.
 func (c *Client) ClaimSubmit(ctx context.Context, domain string) (*ClaimAssertionInfo, error) {
