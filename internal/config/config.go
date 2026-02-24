@@ -17,7 +17,7 @@ package config
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"os"
 )
 
 // Config contains settings from an HVClient configuration file.
@@ -53,11 +53,14 @@ type Config struct {
 
 	// Timeout is the maximum time in seconds for an HVCA API request.
 	Timeout int `json:"timeout"`
+
+	// Debug enable debug
+	Debug bool `json:"debug"`
 }
 
 // NewFromFile creates a new Config object from a configuration file.
 func NewFromFile(filename string) (*Config, error) {
-	var data, err = ioutil.ReadFile(filename)
+	var data, err = os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}

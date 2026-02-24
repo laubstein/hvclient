@@ -22,9 +22,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
+	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -198,7 +200,7 @@ func (c *Client) makeRequest(
 
 	// Read and unmarshal the response body.
 	var data []byte
-	data, err = ioutil.ReadAll(response.Body)
+	data, err = io.ReadAll(response.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read HTTP response body: %w", err)
 	}
@@ -233,11 +235,15 @@ func NewClient(ctx context.Context, conf *Config) (*Client, error) {
 	// Build an HTTP transport using any proxy settings from the environment.
 	// Experimentation suggests that the other values seem to reasonably
 	// maximally encourage the sharing of TCP connections.
-	var tnspt = &http.Transport{
-		MaxIdleConnsPerHost: 1024,
-		MaxIdleConns:        1024,
-		MaxConnsPerHost:     1024,
-		Proxy:               http.ProxyFromEnvironment,
+
+	tnspt := &loggingTransport{
+		Enabled: conf.Debug,
+		Transport: &http.Transport{
+			MaxIdleConnsPerHost: 1024,
+			MaxIdleConns:        1024,
+			MaxConnsPerHost:     1024,
+			Proxy:               http.ProxyFromEnvironment,
+		},
 	}
 
 	if conf.url.Scheme == "https" {
@@ -245,7 +251,7 @@ func NewClient(ctx context.Context, conf *Config) (*Client, error) {
 		var tlsCerts []tls.Certificate
 		if conf.TLSCert != nil {
 			tlsCerts = []tls.Certificate{
-				tls.Certificate{
+				{
 					Certificate: [][]byte{conf.TLSCert.Raw},
 					PrivateKey:  conf.TLSKey,
 					Leaf:        conf.TLSCert,
@@ -253,7 +259,7 @@ func NewClient(ctx context.Context, conf *Config) (*Client, error) {
 			}
 		}
 
-		tnspt.TLSClientConfig = &tls.Config{
+		tnspt.Transport.TLSClientConfig = &tls.Config{
 			RootCAs:            conf.TLSRoots,
 			Certificates:       tlsCerts,
 			InsecureSkipVerify: conf.InsecureSkipVerify,
@@ -285,5 +291,42 @@ func NewClientFromFile(ctx context.Context, filename string) (*Client, error) {
 		return nil, err
 	}
 
+	isDebugEnabled, err := strconv.ParseBool(os.Getenv("HVCLIENT_DEBUG"))
+	if isDebugEnabled {
+		conf.Debug = true
+	}
+
 	return NewClient(ctx, conf)
+}
+
+type loggingTransport struct {
+	Enabled   bool
+	Transport *http.Transport
+}
+
+func (s *loggingTransport) RoundTrip(r *http.Request) (*http.Response, error) {
+	httpTransport := http.DefaultTransport
+	if s.Transport != nil {
+		httpTransport = s.Transport
+	}
+
+	if s.Enabled {
+		bytes := []byte{}
+
+		bytes = append(bytes, []byte("[DEBUG] REQUEST\n")...)
+		reqBytes, _ := httputil.DumpRequestOut(r, true)
+		bytes = append(bytes, reqBytes...)
+
+		resp, err := httpTransport.RoundTrip(r)
+
+		respBytes, _ := httputil.DumpResponse(resp, true)
+		bytes = append(bytes, []byte("\n\n[DEBUG] RESPONSE\n")...)
+		bytes = append(bytes, respBytes...)
+
+		fmt.Printf("%s\n", bytes)
+
+		return resp, err
+	}
+
+	return httpTransport.RoundTrip(r)
 }

@@ -78,6 +78,9 @@ type Config struct {
 	// request. If this is omitted or set to zero, a reasonable default will
 	// be used.
 	Timeout time.Duration
+
+	// Debug enable debug
+	Debug bool
 }
 
 const (
@@ -152,6 +155,7 @@ func NewConfigFromFile(filename string) (*Config, error) {
 		ExtraHeaders:       fileconf.ExtraHeaders,
 		InsecureSkipVerify: fileconf.InsecureSkipVerify,
 		Timeout:            time.Second * time.Duration(fileconf.Timeout),
+		Debug:              fileconf.Debug,
 	}
 
 	// Get mTLS private key from file, if provided.
