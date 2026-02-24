@@ -83,6 +83,7 @@ type jsonClaimAssertionInfo struct {
 const (
 	StatusPending ClaimStatus = iota + 1
 	StatusVerified
+	StatusAny
 )
 
 // Claim log entry status constants.

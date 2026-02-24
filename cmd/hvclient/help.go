@@ -167,6 +167,10 @@ Domain claim options:
       -pending          Used with -claims, list all pending rather than
                         verified domain claims
 
+      -any              Used with -claims, list all domain claims
+
+      -domain           Used with -claims, filter domain claims
+
   -claimsubmit=<domain> Submit a new domain claim
   -claimretrieve=<id>   Show the details of the domain claim with the specified
                         ID

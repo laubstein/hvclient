@@ -379,42 +379,23 @@ func (c *Client) ClaimsDomains(
 	ctx context.Context,
 	page, perPage int,
 	status ClaimStatus,
-) ([]Claim, int64, error) {
-	var claims []Claim
-	var r, err = c.makeRequest(
-		ctx,
-		endpointClaimsDomains+
-			paginationString(page, perPage, time.Time{}, time.Time{})+
-			fmt.Sprintf("&status=%s", status),
-		http.MethodGet,
-		nil,
-		&claims,
-	)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	var count int64
-	count, err = intHeaderFromResponse(r, totalCountHeaderName)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	return claims, count, nil
-}
-
-// ClaimsDomain returns pending or verified domain claims
-func (c *Client) ClaimsDomain(
-	ctx context.Context,
-	page, perPage int,
 	domain string,
 ) ([]Claim, int64, error) {
 	var claims []Claim
+	endpoint := endpointClaimsDomains +
+		paginationString(page, perPage, time.Time{}, time.Time{})
+
+	if status != StatusAny {
+		endpoint = endpoint + fmt.Sprintf("&status=%s", status)
+	}
+
+	if len(domain) > 0 {
+		endpoint = endpoint + fmt.Sprintf("&domain=%s", url.QueryEscape(domain))
+	}
+
 	var r, err = c.makeRequest(
 		ctx,
-		endpointClaimsDomains+
-			paginationString(page, perPage, time.Time{}, time.Time{})+
-			fmt.Sprintf("&domain=%s", domain),
+		endpoint,
 		http.MethodGet,
 		nil,
 		&claims,
@@ -504,6 +485,31 @@ func (c *Client) ClaimDNS(ctx context.Context, id, authDomain string) (bool, err
 	}
 
 	return c.claimAssert(ctx, body, id, pathDNS)
+}
+
+// ClaimDNSGetDomains retrieves a list of Authorization Domain Names (ADNs)
+// for a given claim that can be used to perform DNS Domain Validation
+func (c *Client) ClaimDNSGetDomains(ctx context.Context, id string) ([]string, error) {
+	var body any
+	var out *[]string
+
+	var response, err = c.makeRequest(
+		ctx,
+		endpointClaimsDomains+"/"+url.QueryEscape(id)+pathDNS,
+		http.MethodGet,
+		body,
+		&out,
+	)
+	if err != nil {
+		return []string{}, err
+	}
+
+	switch response.StatusCode {
+	case http.StatusOK:
+		return *out, nil
+	}
+
+	return []string{}, fmt.Errorf("unexpected status code: %d", response.StatusCode)
 }
 
 // ClaimHTTP requests assertion of domain control using HTTP once the appropriate

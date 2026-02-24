@@ -98,6 +98,12 @@ func main() {
 		configFile = *fConfigFile
 	}
 
+	if *fDebug {
+		os.Setenv("HVCLIENT_DEBUG", "true")
+	} else {
+		os.Setenv("HVCLIENT_DEBUG", "false")
+	}
+
 	// Create HVCA client.
 	var ctx, cancel = context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -156,7 +162,7 @@ func main() {
 		quota(clnt)
 
 	case *fClaims:
-		claimsDomains(clnt, *fPage, *fPageSize, *fPending)
+		claimsDomains(clnt, *fPage, *fPageSize, *fPending, *fAnyStatus, *fDomain)
 
 	case *fClaimSubmit != "":
 		claimSubmit(clnt, *fClaimSubmit)
@@ -168,7 +174,7 @@ func main() {
 		claimDelete(clnt, *fClaimDelete)
 
 	case *fClaimDNS != "":
-		claimDNS(clnt, *fClaimDNS, *fAuthDomain)
+		claimDNS(clnt, *fClaimDNS, *fAuthDomain, *fClaimDNSDomains)
 
 	case *fClaimHTTP != "":
 		claimHTTP(clnt, *fClaimHTTP, *fScheme, *fAuthDomain)

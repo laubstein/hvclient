@@ -400,7 +400,7 @@ func TestClientMockClaimsDomains(t *testing.T) {
 			var ctx, cancel = context.WithCancel(context.Background())
 			defer cancel()
 
-			var got, count, err = client.ClaimsDomains(ctx, tc.page, tc.perPage, tc.status)
+			var got, count, err = client.ClaimsDomains(ctx, tc.page, tc.perPage, tc.status, "")
 			if err != nil {
 				t.Fatalf("failed to get stats expiring: %v", err)
 			}

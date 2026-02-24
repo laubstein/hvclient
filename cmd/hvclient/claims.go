@@ -25,18 +25,22 @@ import (
 
 // claimsDomains lists the ID, status, domain, created-at and assert-by times (or the
 // total count) for either pending or verified domain hvclient.
-func claimsDomains(clnt *hvclient.Client, page, pagesize int, pending bool) {
+func claimsDomains(clnt *hvclient.Client, page, pagesize int, pending bool, anyStatus bool, domain string) {
 	var ctx, cancel = context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
 	var status hvclient.ClaimStatus
-	if pending {
-		status = hvclient.StatusPending
+	if anyStatus {
+		status = hvclient.StatusAny
 	} else {
-		status = hvclient.StatusVerified
+		if pending {
+			status = hvclient.StatusPending
+		} else {
+			status = hvclient.StatusVerified
+		}
 	}
 
-	var clms, count, err = clnt.ClaimsDomains(ctx, page, pagesize, status)
+	var clms, count, err = clnt.ClaimsDomains(ctx, page, pagesize, status, domain)
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
@@ -90,19 +94,28 @@ func claimDelete(clnt *hvclient.Client, id string) {
 
 // claimDNS requests assertion of domain control using DNS for
 // the specified claim ID.
-func claimDNS(clnt *hvclient.Client, id, authDomain string) {
+func claimDNS(clnt *hvclient.Client, id, authDomain string, claimDNSDomains bool) {
 	var ctx, cancel = context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	var clm, err = clnt.ClaimDNS(ctx, id, authDomain)
-	if err != nil {
-		log.Fatalf("%v", err)
-	}
+	if claimDNSDomains {
+		var clm, err = clnt.ClaimDNSGetDomains(ctx, id)
+		if err != nil {
+			log.Fatalf("%v", err)
+		}
 
-	if clm {
-		fmt.Printf("VERIFIED\n")
+		fmt.Printf("%s\n", clm)
 	} else {
-		fmt.Printf("CREATED\n")
+		var clm, err = clnt.ClaimDNS(ctx, id, authDomain)
+		if err != nil {
+			log.Fatalf("%v", err)
+		}
+
+		if clm {
+			fmt.Printf("VERIFIED\n")
+		} else {
+			fmt.Printf("CREATED\n")
+		}
 	}
 }
 

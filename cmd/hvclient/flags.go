@@ -28,6 +28,7 @@ const (
 var (
 	fHelp    = flag.Bool("h", false, "show online help")
 	fVersion = flag.Bool("v", false, "show version information")
+	fDebug   = flag.Bool("debug", false, "enable debug")
 )
 
 // PKI flags.
@@ -128,17 +129,20 @@ var (
 
 // Domain claim flags.
 var (
-	fClaims         = flag.Bool("claims", false, "show pending or verified domain claims")
-	fPending        = flag.Bool("pending", false, "use with -claims to show pending rather than verified domain claims")
-	fClaimRetrieve  = flag.String("claimretrieve", "", "retrieve the domain claim with the specified ID")
-	fClaimSubmit    = flag.String("claimsubmit", "", "submit a domain claim for the specified domain")
-	fClaimDelete    = flag.String("claimdelete", "", "delete the domain claim with the specified ID")
-	fClaimDNS       = flag.String("claimdns", "", "request assertion of domain control using DNS for the domain claim with the specified ID")
-	fClaimHTTP      = flag.String("claimhttp", "", "request assertion of domain control using HTTP for the domain claim with the specified ID")
-	fClaimEmail     = flag.String("claimemail", "", "request assertion of domain control using Email for the domain claim with the specified ID")
-	fClaimEmailList = flag.String("claimemaillist", "", "request list of emails authorised to perform email validation for the domain claims with the specified ID")
-	fEmailAddress   = flag.String("address", "", "email address used to send email to verify assertion of domain control using Email validation method for the domain claim")
-	fScheme         = flag.String("scheme", "https", "protocol used to verify assertion of domain control using HTTP method for the domain claim")
-	fAuthDomain     = flag.String("authdomain", "", "authorization domain name used to verify assertion of domain control for the domain claim")
-	fClaimReassert  = flag.String("claimreassert", "", "reassert the domain claim with the specified ID")
+	fClaims          = flag.Bool("claims", false, "show pending or verified domain claims")
+	fPending         = flag.Bool("pending", false, "use with -claims to show pending rather than verified domain claims")
+	fAnyStatus       = flag.Bool("any", false, "use with -claims to show any domain claims status")
+	fDomain          = flag.String("domain", "", "use with -claims to filter domain claims")
+	fClaimRetrieve   = flag.String("claimretrieve", "", "retrieve the domain claim with the specified ID")
+	fClaimSubmit     = flag.String("claimsubmit", "", "submit a domain claim for the specified domain")
+	fClaimDelete     = flag.String("claimdelete", "", "delete the domain claim with the specified ID")
+	fClaimDNS        = flag.String("claimdns", "", "request assertion of domain control using DNS for the domain claim with the specified ID")
+	fClaimDNSDomains = flag.Bool("checkdomains", false, "use with -claimdns to retrieve a list of Authorization Domain Names (ADNs)")
+	fClaimHTTP       = flag.String("claimhttp", "", "request assertion of domain control using HTTP for the domain claim with the specified ID")
+	fClaimEmail      = flag.String("claimemail", "", "request assertion of domain control using Email for the domain claim with the specified ID")
+	fClaimEmailList  = flag.String("claimemaillist", "", "request list of emails authorised to perform email validation for the domain claims with the specified ID")
+	fEmailAddress    = flag.String("address", "", "email address used to send email to verify assertion of domain control using Email validation method for the domain claim")
+	fScheme          = flag.String("scheme", "https", "protocol used to verify assertion of domain control using HTTP method for the domain claim")
+	fAuthDomain      = flag.String("authdomain", "", "authorization domain name used to verify assertion of domain control for the domain claim")
+	fClaimReassert   = flag.String("claimreassert", "", "reassert the domain claim with the specified ID")
 )
