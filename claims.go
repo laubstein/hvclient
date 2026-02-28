@@ -46,6 +46,7 @@ type ClaimLogEntryStatus int
 // Claim is a domain claim.
 type Claim struct {
 	ID        string
+	Token     string
 	Status    ClaimStatus
 	Domain    string
 	CreatedAt time.Time
@@ -57,6 +58,7 @@ type Claim struct {
 // jsonClaim is used internally for JSON marshalling/unmarshalling.
 type jsonClaim struct {
 	ID        string          `json:"id"`
+	Token     string          `json:"token"`
 	Status    ClaimStatus     `json:"status"`
 	Domain    string          `json:"domain"`
 	CreatedAt int64           `json:"created_at"`
@@ -252,6 +254,7 @@ func (c *Claim) UnmarshalJSON(b []byte) error {
 		ID:        data.ID,
 		Status:    data.Status,
 		Domain:    data.Domain,
+		Token:     data.Token,
 		CreatedAt: time.Unix(data.CreatedAt, 0).UTC(),
 		ExpiresAt: time.Unix(data.ExpiresAt, 0).UTC(),
 		AssertBy:  time.Unix(data.AssertBy, 0).UTC(),
