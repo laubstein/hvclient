@@ -161,12 +161,31 @@ type Signature struct {
 	HashAlgorithm string `json:"hash_algorithm,omitempty"`
 }
 
+type KeyUsages struct {
+	DigitalSignature   bool `json:"digital_signature"`
+	ContentCommitment  bool `json:"content_commitment"`
+	KeyEncipherment    bool `json:"key_encipherment"`
+	DataEncipherment   bool `json:"data_encipherment"`
+	KeyAgreement       bool `json:"key_agreement"`
+	KeyCertificateSign bool `json:"key_certificate_sign"`
+	CRLSign            bool `json:"crl_sign"`
+	EncipherOnly       bool `json:"encipher_only"`
+	DecipherOnly       bool `json:"decipher_only"`
+}
+
+func NewKeyUsages() KeyUsages {
+	return KeyUsages{
+		DigitalSignature: true,
+	}
+}
+
 // jsonRequest is used internally for JSON marshalling/unmarshalling.
 type jsonRequest struct {
 	Validity            *Validity            `json:"validity,omitempty"`
 	Subject             *DN                  `json:"subject_dn,omitempty"`
 	SAN                 *SAN                 `json:"san,omitempty"`
 	EKUs                []jsonOID            `json:"extended_key_usages,omitempty"`
+	KeyUsages           KeyUsages            `json:"key_usages,omitempty"`
 	DA                  *DA                  `json:"subject_da,omitempty"`
 	QualifiedStatements *QualifiedStatements `json:"qualified_statements,omitempty"`
 	MSExtension         *MSExtension         `json:"ms_extension_template,omitempty"`
