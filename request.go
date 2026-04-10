@@ -163,21 +163,15 @@ type Signature struct {
 }
 
 type KeyUsages struct {
-	DigitalSignature   bool `json:"digital_signature"`
-	ContentCommitment  bool `json:"content_commitment"`
-	KeyEncipherment    bool `json:"key_encipherment"`
-	DataEncipherment   bool `json:"data_encipherment"`
-	KeyAgreement       bool `json:"key_agreement"`
-	KeyCertificateSign bool `json:"key_certificate_sign"`
-	CRLSign            bool `json:"crl_sign"`
-	EncipherOnly       bool `json:"encipher_only"`
-	DecipherOnly       bool `json:"decipher_only"`
-}
-
-func NewKeyUsages() KeyUsages {
-	return KeyUsages{
-		DigitalSignature: true,
-	}
+	DigitalSignature   *bool `json:"digital_signature,omitempty"`
+	ContentCommitment  *bool `json:"content_commitment,omitempty"`
+	KeyEncipherment    *bool `json:"key_encipherment,omitempty"`
+	DataEncipherment   *bool `json:"data_encipherment,omitempty"`
+	KeyAgreement       *bool `json:"key_agreement,omitempty"`
+	KeyCertificateSign *bool `json:"key_certificate_sign,omitempty"`
+	CRLSign            *bool `json:"crl_sign,omitempty"`
+	EncipherOnly       *bool `json:"encipher_only,omitempty"`
+	DecipherOnly       *bool `json:"decipher_only,omitempty"`
 }
 
 // jsonRequest is used internally for JSON marshalling/unmarshalling.
