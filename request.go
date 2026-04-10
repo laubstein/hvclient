@@ -64,6 +64,7 @@ type Request struct {
 	Subject             *DN
 	SAN                 *SAN
 	EKUs                []asn1.ObjectIdentifier
+	KeyUsages           *KeyUsages
 	DA                  *DA
 	QualifiedStatements *QualifiedStatements
 	MSExtension         *MSExtension
@@ -408,6 +409,7 @@ func (r Request) MarshalJSON() ([]byte, error) {
 		SAN:                 r.SAN,
 		DA:                  r.DA,
 		EKUs:                ekus,
+		KeyUsages:           *r.KeyUsages,
 		QualifiedStatements: r.QualifiedStatements,
 		MSExtension:         r.MSExtension,
 		CustomExtensions:    raw,
