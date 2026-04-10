@@ -31,7 +31,6 @@ type Policy struct {
 	SubjectDN           *SubjectDNPolicy           `json:"subject_dn,omitempty"`
 	SAN                 *SANPolicy                 `json:"san,omitempty"`
 	EKUs                *EKUPolicy                 `json:"extended_key_usages,omitempty"`
-	KeyUsages           *EKUPolicy                 `json:"key_usages,omitempty"`
 	SubjectDA           *SubjectDAPolicy           `json:"subject_da,omitempty"`
 	QualifiedStatements *QualifiedStatementsPolicy `json:"qualified_statements,omitempty"`
 	MSExtensionTemplate *MSExtensionTemplatePolicy `json:"ms_extension_template,omitempty"`
